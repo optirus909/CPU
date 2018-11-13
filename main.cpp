@@ -14,7 +14,7 @@
 
 enum CMD_NUM
 {
-#include "../CPU/commands/commands.h"
+    #include "commands/commands.h"
     CMD_DEF(MAX,)
 };
 #undef CMD_DEF
@@ -24,7 +24,7 @@ enum CMD_NUM
 
 enum REG_NUM
 {
-#include "../CPU/commands/reg_codes.h"
+    #include "commands/reg_codes.h"
     REG_DEF(MAX)
 };
 #undef REG_DEF
