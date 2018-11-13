@@ -39,6 +39,7 @@ struct cpu_t
 {
     elem_t reg[REG_MAX];
     Stack stk;
+    elem_t RAM[20];
     int RPC;
 };
 
@@ -83,6 +84,8 @@ int cpu_exec(cpu_t *pCPU)
     pCPU->RPC = 0;
     for (int i = 0; i < REG_MAX; ++i)
         pCPU->reg[i] = 0;
+    for (int i = 0; i < 20; ++i)
+        pCPU->RAM[i] = 0;
     return 0;
 }
 

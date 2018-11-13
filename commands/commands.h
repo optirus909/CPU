@@ -38,9 +38,14 @@ CMD_DEF(SUB,printf("SUB\n");                                            \
         StackPop(&pCPU->stk, &a);                                        \
         StackPop(&pCPU->stk, &b);                                        \
         printf("SUB: data: a = %lg, b = %lg\n", a, b);                  \
-        StackPush(&pCPU->stk, a - b);                                   )
+        StackPush(&pCPU->stk, b - a);                                   )
 
-CMD_DEF(SQRT,printf("SQRT\n");)
+CMD_DEF(SQRT,                                                           \
+        printf("SQRT\n");                                               \
+        elem_t val = 0;                                                 \
+        StackPop(&pCPU->stk, &val);                                      \
+        printf("POPD: data: %lg\n", val);                               \
+        StackPush(&pCPU->stk, sqrt(val));                                   )
 
 CMD_DEF(MUL,printf("MUL\n");                                            \
         elem_t a = 0;                                                   \
@@ -56,10 +61,18 @@ CMD_DEF(DIV,printf("DIV\n");                                            \
         StackPop(&pCPU->stk, &a);                                        \
         StackPop(&pCPU->stk, &b);                                        \
         printf("DIV: data: a = %lg, b = %lg\n", a, b);                  \
-        StackPush(&pCPU->stk, a / b);                                   )
+        StackPush(&pCPU->stk, b / a);                                   )
 
-CMD_DEF(IN,printf("IN\n");)
+CMD_DEF(IN,                                                     \
+        printf("IN\n");                                         \
+        elem_t val = 0;                                         \
+        scanf("%lg", &val);                                     \
+        StackPush(&pCPU->stk, val);                                        )
 
-CMD_DEF(OUT,printf("OUT\n");)
+CMD_DEF(OUT,                                                            \
+        printf("OUT\n");                                                \
+        elem_t val = 0;                                                 \
+        StackPop(&pCPU->stk, &val);                                     \
+        printf("OUT: %lg\n", val);                                      )
 
 CMD_DEF(END,printf("END\n");)
