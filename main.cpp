@@ -2,6 +2,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
+#include <string.h>
 #include <stdlib.h>
 #include "lib/stack.h"
 #include "lib/stack_debug.h"
@@ -30,6 +31,10 @@ enum REG_NUM
 
 //-----------------------------------------------------------------------------------------------------
 
+#define FOPEN_ERR -1
+
+//-----------------------------------------------------------------------------------------------------
+
 struct cpu_t
 {
     elem_t reg[REG_MAX];
@@ -39,6 +44,7 @@ struct cpu_t
 
 //-----------------------------------------------------------------------------------------------------
 
+char * text_reading(FILE *file, long * FileSize);
 int cpu_load(cpu_t *pCPU, char * pcode);
 int cpu_exec(cpu_t *pCPU);
 int cpu_dtor(cpu_t *pCPU);
@@ -50,8 +56,19 @@ int main()
     cpu_t theCPU;
     cpu_exec( &theCPU );
 
-    for (int i = 0; i < REG_MAX; ++i)
-        printf("%lg\n", theCPU.reg[i]);
+    FILE *fin;
+
+    if((fin = fopen("/Users/andreyandriyaynen/CLionProjects/assembler/cmake-build-debug/output.txt", "r")) == nullptr)
+        return FOPEN_ERR;
+
+
+    long  filesize;
+    char * arr = text_reading(fin, &filesize);
+    fclose(fin);
+
+    char *code = arr;
+
+    cpu_load( &theCPU, code );
 
     cpu_dtor( &theCPU );
 
@@ -90,4 +107,32 @@ char * text_reading(FILE *file, long * FileSize)
     fread(buffer, sizeof(char *), *FileSize, file);
 
     return buffer;
+}
+
+//-----------------------------------------------------------------------------------------------------
+
+int cpu_load(cpu_t *pCPU, char * pcode)
+{
+    pCPU->RPC = 0;
+    while (pcode[pCPU->RPC] != CMD_END)
+    {
+        #define CMD_DEF(name, code)     \
+            case CMD_##name:            \
+            {                           \
+                code;                   \
+                break;                  \
+            }
+
+
+        switch (pcode[pCPU->RPC])
+        {
+            #include "commands/commands.h"
+        }
+
+        #undef CMD_DEF
+
+        pCPU->RPC++;
+
+        StackDump(&pCPU->stk);
+    }
 }

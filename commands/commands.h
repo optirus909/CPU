@@ -1,5 +1,14 @@
 CMD_DEF(PUSHR, printf("PUSHR\n");)
-CMD_DEF(PUSHD,printf("PUSHD\n");)
+CMD_DEF(PUSHD,                                                          \
+        printf("PUSHD\n");                                              \
+        char * buf = (char *) calloc(sizeof(elem_t), sizeof(char));     \
+        pCPU->RPC++;                                                    \
+        for (int i = 0; i < sizeof(elem_t); i++)                        \
+            buf[i] = pcode[pCPU->RPC + i];                              \
+        elem_t a = strtod(buf, &buf);                                   \
+        printf("PUSHD: data: %lg\n", a);                                \
+        StackPush(&(pCPU->stk), a);                                     \
+        pCPU->RPC += sizeof(elem_t) - 1;                                )
 CMD_DEF(PUSHM, printf("PUSHM\n");)
 CMD_DEF(POPR, printf("POPR\n");)
 CMD_DEF(POPD, printf("POPD\n");)
