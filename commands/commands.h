@@ -7,7 +7,7 @@ CMD_DEF(PUSHD,                                                          \
             buf[i] = pcode[pCPU->RPC + i];                              \
         elem_t a = strtod(buf, &buf);                                   \
         printf("PUSHD: data: %lg\n", a);                                \
-        StackPush(&(pCPU->stk), a);                                     \
+        StackPush(&pCPU->stk, a);                                       \
         pCPU->RPC += sizeof(elem_t) - 1;                                )
 CMD_DEF(PUSHM, printf("PUSHM\n");)
 CMD_DEF(POPR, printf("POPR\n");)

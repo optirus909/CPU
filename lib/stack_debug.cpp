@@ -71,12 +71,12 @@ int StackDump( Stack * pStack )
         for ( int i = 0; i < pStack->size; i++ )
         {
             if ( i < pStack->count )
-                printf( "#       *[%d]: %d\n", i, pStack->data[i] );
+                printf( "#       *[%d]: %lg\n", i, pStack->data[i] );
             else
             if ( pStack->data[i] == STK_POISON)
-                printf( "#        [%d]: %d (STK_POISON)\n", i, pStack->data[i] );
+                printf( "#        [%d]: %lg (STK_POISON)\n", i, pStack->data[i] );
             else
-                printf( "#        [%d]: %d (TRASH)\n", i, pStack->data[i] );
+                printf( "#        [%d]: %lg (TRASH)\n", i, pStack->data[i] );
         }
         printf( "#      }\n"
                         "# }\n\n" );
