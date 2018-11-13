@@ -111,7 +111,7 @@ int StackPop( Stack * pStack, elem_t * retData )
     if ( !StackIsEmpty( pStack ) )
     {
         *retData = pStack->data[ --pStack->count ];
-        pStack->data[ pStack->count + 1] = STK_POISON;
+        pStack->data[ pStack->count] = STK_POISON;
         return 0; //clear
     }
     else
