@@ -22,11 +22,21 @@ int StackOk( const Stack * pStack )
         return -1;
     else if ( pStack->data == nullptr )
         return -2;
-    else if (pStack->bcanary != POISON || pStack->ecanary != POISON || 0 > pStack->count ||\
-                                                                pStack->count > pStack->size)
-        return -3;
     else
-        return 1;
+    {
+        if(STK_CANARY_PROT)
+        {
+            printf("STK_CANARY_PROT = %d\n", STK_CANARY_PROT);
+            if (pStack->bcanary != POISON || pStack->ecanary != POISON || 0 > pStack->count ||
+                pStack->count > pStack->size)
+                return -3;
+        }
+        printf("STK_CANARY_PROT = %d\n", STK_CANARY_PROT);
+        if (0 > pStack->count || pStack->count > pStack->size)
+            return -3;
+    }
+
+    return 1;
 }
 
 //-----------------------------------------------------------------------------------------------------

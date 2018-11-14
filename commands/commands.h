@@ -1,4 +1,9 @@
-CMD_DEF(PUSHR, printf("PUSHR\n");)
+CMD_DEF(PUSHR,                                                          \
+        printf("PUSHR\n");                                              \
+        pCPU->RPC++;                                                    \
+        StackPush(&pCPU->stk, pCPU->reg[ pcode[ pCPU->RPC ] ]);         \
+        pCPU->reg[ pcode[ pCPU->RPC ] ] = NAN;                          \
+        CPU_dump(pCPU);                                                )
 
 //-----------------------------------------------------------------------------------------------------
 
@@ -19,7 +24,11 @@ CMD_DEF(PUSHM, printf("PUSHM\n");)
 
 //-----------------------------------------------------------------------------------------------------
 
-CMD_DEF(POPR, printf("POPR\n");)
+CMD_DEF(POPR,                                                          \
+        printf("POPR\n");                                               \
+        pCPU->RPC++;                                                    \
+        StackPop(&pCPU->stk, &pCPU->reg[ pcode[ pCPU->RPC ] ]);         \
+        CPU_dump(pCPU);                                                )
 
 //-----------------------------------------------------------------------------------------------------
 

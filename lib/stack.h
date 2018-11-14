@@ -10,6 +10,7 @@
 #define REALLOC_LIMIT  1024
 #define POISON 0xBEDA
 #define STK_POISON 0XDEADBEEF
+#define STK_CANARY_PROT true
 
 //-----------------------------------------------------------------------------------------------------
 

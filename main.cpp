@@ -9,6 +9,12 @@
 
 //-----------------------------------------------------------------------------------------------------
 
+/**
+ * TODO jmp, call
+ */
+
+//-----------------------------------------------------------------------------------------------------
+
 #define CMD_DEF(name, code)\
     CMD_##name,
 
@@ -32,6 +38,8 @@ enum REG_NUM
 //-----------------------------------------------------------------------------------------------------
 
 #define FOPEN_ERR -1
+#define RAM_SIZE 20
+#define STK_START_SIZE 10
 
 //-----------------------------------------------------------------------------------------------------
 
@@ -39,7 +47,7 @@ struct cpu_t
 {
     elem_t reg[REG_MAX];
     Stack stk;
-    elem_t RAM[20];
+    elem_t RAM[RAM_SIZE];
     int RPC;
 };
 
@@ -49,7 +57,7 @@ char * text_reading(FILE *file, long * FileSize);
 int cpu_load(cpu_t *pCPU, char * pcode);
 int cpu_exec(cpu_t *pCPU);
 int cpu_dtor(cpu_t *pCPU);
-
+int CPU_dump(cpu_t *pCPU);
 //-----------------------------------------------------------------------------------------------------
 
 int main()
@@ -61,12 +69,9 @@ int main()
 
     if((fin = fopen("/Users/andreyandriyaynen/CLionProjects/assembler/cmake-build-debug/output.txt", "r")) == nullptr)
         return FOPEN_ERR;
-
-
     long  filesize;
     char * arr = text_reading(fin, &filesize);
     fclose(fin);
-
     char *code = arr;
 
     cpu_load( &theCPU, code );
@@ -80,12 +85,12 @@ int main()
 
 int cpu_exec(cpu_t *pCPU)
 {
-    StackCtor(&pCPU->stk, 10);
+    StackCtor(&pCPU->stk, STK_START_SIZE);
     pCPU->RPC = 0;
     for (int i = 0; i < REG_MAX; ++i)
-        pCPU->reg[i] = 0;
-    for (int i = 0; i < 20; ++i)
-        pCPU->RAM[i] = 0;
+        pCPU->reg[i] = NAN;
+    for (int i = 0; i < RAM_SIZE; ++i)
+        pCPU->RAM[i] = NAN;
     return 0;
 }
 
@@ -95,7 +100,9 @@ int cpu_dtor(cpu_t *pCPU)
 {
     StackDtor(&pCPU->stk);
     for (int i = 0; i < REG_MAX; ++i)
-        pCPU->reg[i] = 0;
+        pCPU->reg[i] = NAN;
+    for (int i = 0; i < RAM_SIZE; ++i)
+        pCPU->RAM[i] = NAN;
     return 0;
 }
 
@@ -138,4 +145,25 @@ int cpu_load(cpu_t *pCPU, char * pcode)
 
         StackDump(&pCPU->stk);
     }
+}
+
+//-----------------------------------------------------------------------------------------------------int StackDump( Stack * pStack )
+
+int CPU_dump(cpu_t *pCPU)
+{
+    printf( "\n# CPU [%p] (OK)\n", pCPU );
+    printf("# REG count = %d\n", REG_MAX);
+    printf("# REG[%d][%p]\n", REG_MAX, pCPU->reg);
+    printf("#      {\n");
+    for (int j = 0; j < REG_MAX; ++j)
+        printf("#        reg[%d] = %lg\n", j, pCPU->reg[j]);
+    printf("#      }\n");
+    printf( "# RAM size = %d\n", RAM_SIZE);
+    printf("# RAM[%d][%p]\n#      {\n", RAM_SIZE, pCPU->RAM);
+
+    for ( int i = 0; i < RAM_SIZE; i++ )
+        printf( "#        [%d]: %lg\n", i, pCPU->RAM[i] );
+
+    printf( "#      }\n"
+                    "# }\n\n" );
 }
