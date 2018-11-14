@@ -20,7 +20,19 @@ CMD_DEF(PUSHD,                                                          \
 
 //-----------------------------------------------------------------------------------------------------
 
-CMD_DEF(PUSHM, printf("PUSHM\n");)
+CMD_DEF(PUSHM,                                                          \
+        printf("PUSHM\n");                                              \
+        char * buf = (char *) calloc(sizeof(elem_t), sizeof(char));     \
+        pCPU->RPC++;                                                    \
+        for (int i = 0; i < sizeof(elem_t); i++)                        \
+            buf[i] = pcode[pCPU->RPC + i];                              \
+        elem_t a = strtod(buf, &buf);                                   \
+        int index = (int) a;                                              \
+        printf("PUSHM: index: %d\n", index);                                \
+        StackPush(&pCPU->stk, pCPU->RAM[index]);                           \
+        pCPU->RAM[index] = NAN;                           \
+        pCPU->RPC += sizeof(elem_t) - 1;                                \
+        CPU_dump(pCPU);                                                )
 
 //-----------------------------------------------------------------------------------------------------
 
@@ -40,7 +52,18 @@ CMD_DEF(POPD,                                                           \
 
 //-----------------------------------------------------------------------------------------------------
 
-CMD_DEF(POPM, printf("POPM\n");)
+CMD_DEF(POPM,                                                           \
+        printf("POPM\n");                                               \
+        char * buf = (char *) calloc(sizeof(elem_t), sizeof(char));     \
+        pCPU->RPC++;                                                    \
+        for (int i = 0; i < sizeof(elem_t); i++)                        \
+            buf[i] = pcode[pCPU->RPC + i];                              \
+        elem_t a = strtod(buf, &buf);                                   \
+        int index = (int) a;                                              \
+        printf("PUSHM: index: %d\n", index);                                \
+        StackPop(&pCPU->stk, &pCPU->RAM[index]);                        \
+        pCPU->RPC += sizeof(elem_t) - 1;                        \
+        CPU_dump(pCPU);                                                )
 
 //-----------------------------------------------------------------------------------------------------
 
