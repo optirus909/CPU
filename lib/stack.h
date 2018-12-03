@@ -7,7 +7,6 @@
 
 //-----------------------------------------------------------------------------------------------------
 
-#define REALLOC_LIMIT  1024
 #define POISON 0xBEDA
 #define STK_POISON 0XDEADBEEF
 #define STK_CANARY_PROT true
@@ -21,9 +20,9 @@ typedef double elem_t; // uint64_t или size_t
 struct Stack
 {
     int bcanary;
-    size_t size;                    ///TODO check this type
-    size_t count;                   ///and this
-    elem_t * data;                  ///and this
+    size_t size;
+    size_t count;
+    elem_t * data;
     int ecanary;
 };
 //-----------------------------------------------------------------------------------------------------

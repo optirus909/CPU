@@ -4,14 +4,21 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
+#include <zconf.h>
 #include "lib/stack.h"
 #include "lib/stack_debug.h"
 
 //-----------------------------------------------------------------------------------------------------
-
 /**
  * TODO jmp, call
+ * TODO byte_get_num, byte_get_reg, byte_get_cmd
+ * TODO recursion and sq eq
+ * TODO namutit inline functsii
+ * TODO list lib, asm_get_label, jmps, calls, ret
  */
+//-----------------------------------------------------------------------------------------------------
+
+typedef long num_t;
 
 //-----------------------------------------------------------------------------------------------------
 
@@ -38,33 +45,31 @@ enum REG_NUM
 //-----------------------------------------------------------------------------------------------------
 
 #define FOPEN_ERR -1
-#define RAM_SIZE 20
+#define RAM_SIZE 3
 #define STK_START_SIZE 10
 
 //-----------------------------------------------------------------------------------------------------
 
 struct cpu_t
 {
+    char * code;
     elem_t reg[REG_MAX];
     Stack stk;
     elem_t RAM[RAM_SIZE];
-    int RPC;
+    long RPC;
 };
 
 //-----------------------------------------------------------------------------------------------------
 
 char * text_reading(FILE *file, long * FileSize);
-int cpu_load(cpu_t *pCPU, char * pcode);
-int cpu_exec(cpu_t *pCPU);
+int cpu_exec(cpu_t *pCPU, char * code);
+int cpu_load(cpu_t *pCPU);
 int cpu_dtor(cpu_t *pCPU);
-int CPU_dump(cpu_t *pCPU);
+int cpu_dump(cpu_t *pCPU);
 //-----------------------------------------------------------------------------------------------------
 
 int main()
 {
-    cpu_t theCPU;
-    cpu_exec( &theCPU );
-
     FILE *fin;
 
     if((fin = fopen("/Users/andreyandriyaynen/CLionProjects/assembler/cmake-build-debug/output.txt", "r")) == nullptr)
@@ -72,9 +77,13 @@ int main()
     long  filesize;
     char * arr = text_reading(fin, &filesize);
     fclose(fin);
-    char *code = arr;
 
-    cpu_load( &theCPU, code );
+    cpu_t theCPU;
+    cpu_exec( &theCPU, arr );
+
+    theCPU.code = arr;
+
+    cpu_load( &theCPU );
 
     cpu_dtor( &theCPU );
 
@@ -83,10 +92,11 @@ int main()
 
 //-----------------------------------------------------------------------------------------------------
 
-int cpu_exec(cpu_t *pCPU)
+int cpu_exec(cpu_t *pCPU, char * code)
 {
     StackCtor(&pCPU->stk, STK_START_SIZE);
     pCPU->RPC = 0;
+    pCPU->code = code;
     for (int i = 0; i < REG_MAX; ++i)
         pCPU->reg[i] = NAN;
     for (int i = 0; i < RAM_SIZE; ++i)
@@ -103,6 +113,7 @@ int cpu_dtor(cpu_t *pCPU)
         pCPU->reg[i] = NAN;
     for (int i = 0; i < RAM_SIZE; ++i)
         pCPU->RAM[i] = NAN;
+    free(pCPU->code);
     return 0;
 }
 
@@ -121,10 +132,10 @@ char * text_reading(FILE *file, long * FileSize)
 
 //-----------------------------------------------------------------------------------------------------
 
-int cpu_load(cpu_t *pCPU, char * pcode)
+int cpu_load(cpu_t *pCPU)
 {
     pCPU->RPC = 0;
-    while (pcode[pCPU->RPC] != CMD_END)
+    while (pCPU->code[pCPU->RPC] != CMD_END)
     {
         #define CMD_DEF(name, code)     \
             case CMD_##name:            \
@@ -133,26 +144,45 @@ int cpu_load(cpu_t *pCPU, char * pcode)
                 break;                  \
             }
 
+        #define JUMP(name, op)                                          \
+            {                                                           \
+                elem_t a = 0;                                           \
+                elem_t b = 0;                                           \
+                StackPop(&pCPU->stk, &a);                               \
+                StackPop(&pCPU->stk, &b);                               \
+                printf(# name ": data: a = %lg, b = %lg\n", a, b);      \
+                if (a op b)                                             \
+                {                                                       \
+                    char * num = &pCPU->code[pCPU->RPC + 1];            \
+                    char * end;                                         \
+                    long val = strtol(num, &end, 10);                   \
+                    printf("new pc = %ld\n", val);                      \
+                    pCPU->RPC = val - 1;                                \
+                }                                                       \
+            }
 
-        switch (pcode[pCPU->RPC])
+        switch (pCPU->code[pCPU->RPC])
         {
             #include "commands/commands.h"
         }
 
+        #undef JUMP
         #undef CMD_DEF
+
+        sleep(1);
 
         pCPU->RPC++;
 
-        StackDump(&pCPU->stk);
     }
 }
 
-//-----------------------------------------------------------------------------------------------------int StackDump( Stack * pStack )
+//-----------------------------------------------------------------------------------------------------
 
-int CPU_dump(cpu_t *pCPU)
+int cpu_dump(cpu_t *pCPU)
 {
     printf( "\n# CPU [%p] (OK)\n", pCPU );
     printf("# REG count = %d\n", REG_MAX);
+    printf("# RPC = %lx\n", pCPU->RPC);
     printf("# REG[%d][%p]\n", REG_MAX, pCPU->reg);
     printf("#      {\n");
     for (int j = 0; j < REG_MAX; ++j)

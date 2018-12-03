@@ -84,16 +84,9 @@ int StackPush( Stack * pStack, elem_t val )
         return 0;                                               //clear
     }
 
-    if ( pStack->size > REALLOC_LIMIT )
-    {
-        pStack->data = (elem_t *) realloc( pStack->data, pStack->size * 1.5 );
-        pStack->size = pStack->size * 1.5;
-    }
-    else
-    {
-        pStack->data = (elem_t *) realloc( pStack->data, pStack->size * 2 );
-        pStack->size = pStack->size * 2;
-    }
+    pStack->data = (elem_t *) realloc( pStack->data, pStack->size * 2 );
+    pStack->size = pStack->size * 2;
+
     if ( StackOk( pStack ) < 0)
         return StackOk( pStack );
     else
