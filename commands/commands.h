@@ -179,7 +179,7 @@ CMD_DEF(CALL,                                                                   
         char * end;                                                                                 \
         label_t val = strtol(num, &end, 10);                                                        \
         printf("new pc = %ld\n", val);                                                              \
-        StackPush(&pCPU->retstk, pCPU->RPC + sizeof(label_t) - 1);                                                          \
+        StackPush(&pCPU->retstk, pCPU->RPC + sizeof(label_t));                                      \
         pCPU->RPC = val - 1;                                                                        \
         StackDump(&pCPU->retstk);                                                                   )
 
@@ -189,9 +189,10 @@ CMD_DEF(CALL,                                                                   
 CMD_DEF(RET,                                                                                        \
         printf("RET\n");                                                                            \
         label_t label = 0;                                                                          \
-        StackPop(&pCPU->stk, &label);                                                               \
-        printf("new pc = %ld\n", label + sizeof(label_t));                                                            \
-        pCPU->RPC = label + sizeof(label_t) - 1;                                                                      )
+        StackPop(&pCPU->retstk, &label);                                                               \
+        printf("new pc = %ld\n", label);                                                            \
+        pCPU->RPC = label;                                                                          \
+        StackDump(&pCPU->retstk);                                                                   )
 
 //-----------------------------------------------------------------------------------------------------
 

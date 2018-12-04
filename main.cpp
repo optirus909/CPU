@@ -170,8 +170,6 @@ int cpu_load(cpu_t *pCPU)
         #undef JUMP
         #undef CMD_DEF
 
-        sleep(1);
-
         pCPU->RPC++;
 
     }
