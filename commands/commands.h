@@ -17,7 +17,7 @@ CMD_DEF(PUSHD,                                                                  
         for (int i = 0; i < sizeof(elem_t); i++)                                                    \
             buf[i] = pCPU->code[pCPU->RPC + i];                                                     \
         elem_t a = strtod(buf, &buf);                                                               \
-        printf("PUSHD: data: %lg\n", a);                                                            \
+        printf("PUSHD: data: %ld\n", a);                                                            \
         StackPush(&pCPU->stk, a);                                                                   \
         pCPU->RPC += sizeof(elem_t) - 1;                                                            )
 
@@ -50,7 +50,7 @@ CMD_DEF(POPD,                                                                   
         printf("POPD\n");                                                                           \
         elem_t val = 0;                                                                             \
         StackPop(&pCPU->stk, &val);                                                                 \
-        printf("POPD: data: %lg\n", val);                                                           )
+        printf("POPD: data: %ld\n", val);                                                           )
 
 //-----------------------------------------------------------------------------------------------------
 
@@ -75,17 +75,18 @@ CMD_DEF(ADD,                                                                    
         elem_t b = 0;                                                                               \
         StackPop(&pCPU->stk, &a);                                                                   \
         StackPop(&pCPU->stk, &b);                                                                   \
-        printf("ADD: data: a = %lg, b = %lg\n", a, b);                                              \
+        printf("ADD: data: a = %ld, b = %ld\n", a, b);                                              \
         StackPush(&pCPU->stk, a + b);                                                               )
 
 //-----------------------------------------------------------------------------------------------------
 
-CMD_DEF(SUB,printf("SUB\n");                                                                        \
+CMD_DEF(SUB,                                                                                        \
+        printf("SUB\n");                                                                            \
         elem_t a = 0;                                                                               \
         elem_t b = 0;                                                                               \
         StackPop(&pCPU->stk, &a);                                                                   \
         StackPop(&pCPU->stk, &b);                                                                   \
-        printf("SUB: data: a = %lg, b = %lg\n", a, b);                                              \
+        printf("SUB: data: a = %ld, b = %ld\n", a, b);                                              \
         StackPush(&pCPU->stk, b - a);                                                               )
 
 //-----------------------------------------------------------------------------------------------------
@@ -95,7 +96,7 @@ CMD_DEF(MUL,printf("MUL\n");                                                    
         elem_t b = 0;                                                                               \
         StackPop(&pCPU->stk, &a);                                                                   \
         StackPop(&pCPU->stk, &b);                                                                   \
-        printf("MUL: data: a = %lg, b = %lg\n", a, b);                                              \
+        printf("MUL: data: a = %ld, b = %ld\n", a, b);                                              \
         StackPush(&pCPU->stk, a * b);                                                               )
 
 //-----------------------------------------------------------------------------------------------------
@@ -105,7 +106,7 @@ CMD_DEF(DIV,printf("DIV\n");                                                    
         elem_t b = 0;                                                                               \
         StackPop(&pCPU->stk, &a);                                                                   \
         StackPop(&pCPU->stk, &b);                                                                   \
-        printf("DIV: data: a = %lg, b = %lg\n", a, b);                                              \
+        printf("DIV: data: a = %ld, b = %ld\n", a, b);                                              \
         StackPush(&pCPU->stk, b / a);                                                               )
 
 //-----------------------------------------------------------------------------------------------------
@@ -130,7 +131,7 @@ CMD_DEF(JMP,                                                                    
         printf("JMP\n");                                                                            \
         char * num = &pCPU->code[pCPU->RPC + 1];                                                    \
         char * end;                                                                                 \
-        long val = strtol(num, &end, 10);                                                           \
+        label_t val = strtol(num, &end, 10);                                                           \
         printf("new pc = %ld\n", val);                                                              \
         pCPU->RPC = val - 1;                                                                        )
 
@@ -169,6 +170,28 @@ CMD_DEF(JBE,                                                                    
 CMD_DEF(JRE,                                                                                        \
         JUMP(JRE, !=);                                                                              \
         printf("JRE\n");                                                                            )
+
+//-----------------------------------------------------------------------------------------------------
+
+CMD_DEF(CALL,                                                                                       \
+        printf("CALL\n");                                                                           \
+        char * num = &pCPU->code[pCPU->RPC + 1];                                                    \
+        char * end;                                                                                 \
+        label_t val = strtol(num, &end, 10);                                                        \
+        printf("new pc = %ld\n", val);                                                              \
+        StackPush(&pCPU->retstk, pCPU->RPC + sizeof(label_t) - 1);                                                          \
+        pCPU->RPC = val - 1;                                                                        \
+        StackDump(&pCPU->retstk);                                                                   )
+
+
+//-----------------------------------------------------------------------------------------------------
+
+CMD_DEF(RET,                                                                                        \
+        printf("RET\n");                                                                            \
+        label_t label = 0;                                                                          \
+        StackPop(&pCPU->stk, &label);                                                               \
+        printf("new pc = %ld\n", label + sizeof(label_t));                                                            \
+        pCPU->RPC = label + sizeof(label_t) - 1;                                                                      )
 
 //-----------------------------------------------------------------------------------------------------
 

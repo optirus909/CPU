@@ -2,7 +2,6 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
-#include <string.h>
 #include <stdlib.h>
 #include <zconf.h>
 #include "lib/stack.h"
@@ -10,11 +9,12 @@
 
 //-----------------------------------------------------------------------------------------------------
 /**
- * TODO jmp, call
+ * TODO call, ret
  */
 //-----------------------------------------------------------------------------------------------------
 
 typedef long num_t;
+typedef long label_t;
 
 //-----------------------------------------------------------------------------------------------------
 
@@ -38,11 +38,13 @@ enum REG_NUM
 };
 #undef REG_DEF
 
-//-----------------------------------------------------------------------------------------------------
+enum CONSTS
+{
+    FOPEN_ERR =  -1,
+    RAM_SIZE = 3,
+    STK_START_SIZE = 10
+};
 
-#define FOPEN_ERR -1
-#define RAM_SIZE 3
-#define STK_START_SIZE 10
 
 //-----------------------------------------------------------------------------------------------------
 
@@ -51,6 +53,7 @@ struct cpu_t
     char * code;
     elem_t reg[REG_MAX];
     Stack stk;
+    Stack retstk;
     elem_t RAM[RAM_SIZE];
     long RPC;
 };
@@ -91,6 +94,7 @@ int main()
 int cpu_exec(cpu_t *pCPU, char * code)
 {
     StackCtor(&pCPU->stk, STK_START_SIZE);
+    StackCtor(&pCPU->retstk, STK_START_SIZE);
     pCPU->RPC = 0;
     pCPU->code = code;
     for (int i = 0; i < REG_MAX; ++i)
@@ -105,6 +109,7 @@ int cpu_exec(cpu_t *pCPU, char * code)
 int cpu_dtor(cpu_t *pCPU)
 {
     StackDtor(&pCPU->stk);
+    StackDtor(&pCPU->retstk);
     for (int i = 0; i < REG_MAX; ++i)
         pCPU->reg[i] = NAN;
     for (int i = 0; i < RAM_SIZE; ++i)
@@ -151,7 +156,7 @@ int cpu_load(cpu_t *pCPU)
                 {                                                       \
                     char * num = &pCPU->code[pCPU->RPC + 1];            \
                     char * end;                                         \
-                    long val = strtol(num, &end, 10);                   \
+                    label_t val = strtol(num, &end, 10);                   \
                     printf("new pc = %ld\n", val);                      \
                     pCPU->RPC = val - 1;                                \
                 }                                                       \
