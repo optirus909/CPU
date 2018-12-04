@@ -11,10 +11,6 @@
 //-----------------------------------------------------------------------------------------------------
 /**
  * TODO jmp, call
- * TODO byte_get_num, byte_get_reg, byte_get_cmd
- * TODO recursion and sq eq
- * TODO namutit inline functsii
- * TODO list lib, asm_get_label, jmps, calls, ret
  */
 //-----------------------------------------------------------------------------------------------------
 
@@ -137,11 +133,11 @@ int cpu_load(cpu_t *pCPU)
     pCPU->RPC = 0;
     while (pCPU->code[pCPU->RPC] != CMD_END)
     {
-        #define CMD_DEF(name, code)     \
-            case CMD_##name:            \
-            {                           \
-                code;                   \
-                break;                  \
+        #define CMD_DEF(name, code)                                     \
+            case CMD_##name:                                            \
+            {                                                           \
+                code;                                                   \
+                break;                                                  \
             }
 
         #define JUMP(name, op)                                          \
