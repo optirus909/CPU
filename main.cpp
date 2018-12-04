@@ -98,9 +98,9 @@ int cpu_exec(cpu_t *pCPU, char * code)
     pCPU->RPC = 0;
     pCPU->code = code;
     for (int i = 0; i < REG_MAX; ++i)
-        pCPU->reg[i] = NAN;
+        pCPU->reg[i] = -1;
     for (int i = 0; i < RAM_SIZE; ++i)
-        pCPU->RAM[i] = NAN;
+        pCPU->RAM[i] = -1;
     return 0;
 }
 
@@ -181,17 +181,17 @@ int cpu_dump(cpu_t *pCPU)
 {
     printf( "\n# CPU [%p] (OK)\n", pCPU );
     printf("# REG count = %d\n", REG_MAX);
-    printf("# RPC = %lx\n", pCPU->RPC);
+    printf("# RPC = %ld\n", pCPU->RPC);
     printf("# REG[%d][%p]\n", REG_MAX, pCPU->reg);
     printf("#      {\n");
     for (int j = 0; j < REG_MAX; ++j)
-        printf("#        reg[%d] = %lg\n", j, pCPU->reg[j]);
+        printf("#        reg[%d] = %ld\n", j, pCPU->reg[j]);
     printf("#      }\n");
     printf( "# RAM size = %d\n", RAM_SIZE);
     printf("# RAM[%d][%p]\n#      {\n", RAM_SIZE, pCPU->RAM);
 
     for ( int i = 0; i < RAM_SIZE; i++ )
-        printf( "#        [%d]: %lg\n", i, pCPU->RAM[i] );
+        printf( "#        [%d]: %ld\n", i, pCPU->RAM[i] );
 
     printf( "#      }\n"
                     "# }\n\n" );

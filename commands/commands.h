@@ -6,7 +6,8 @@ CMD_DEF(PUSHR,                                                                  
         printf("PUSHR\n");                                                                          \
         pCPU->RPC++;                                                                                \
         StackPush(&pCPU->stk, pCPU->reg[ pCPU->code[ pCPU->RPC ] ]);                                \
-        cpu_dump(pCPU);                                                                             )
+        cpu_dump(pCPU);                                                                             \
+        StackDump(&pCPU->stk);                                                                      )
 
 //-----------------------------------------------------------------------------------------------------
 
@@ -19,7 +20,8 @@ CMD_DEF(PUSHD,                                                                  
         elem_t a = strtod(buf, &buf);                                                               \
         printf("PUSHD: data: %ld\n", a);                                                            \
         StackPush(&pCPU->stk, a);                                                                   \
-        pCPU->RPC += sizeof(elem_t) - 1;                                                            )
+        pCPU->RPC += sizeof(elem_t) - 1;                                                            \
+        StackDump(&pCPU->stk);                                                                      )
 
 //-----------------------------------------------------------------------------------------------------
 
@@ -42,7 +44,8 @@ CMD_DEF(POPR,                                                                   
         printf("POPR\n");                                                                           \
         pCPU->RPC++;                                                                                \
         StackPop(&pCPU->stk, &pCPU->reg[ pCPU->code[ pCPU->RPC ] ]);                                \
-        cpu_dump(pCPU);                                                                             )
+        cpu_dump(pCPU);                                                                             \
+        StackDump(&pCPU->stk);                                                                      )
 
 //-----------------------------------------------------------------------------------------------------
 
@@ -87,7 +90,7 @@ CMD_DEF(SUB,                                                                    
         StackPop(&pCPU->stk, &a);                                                                   \
         StackPop(&pCPU->stk, &b);                                                                   \
         printf("SUB: data: a = %ld, b = %ld\n", a, b);                                              \
-        StackPush(&pCPU->stk, b - a);                                                               )
+        StackPush(&pCPU->stk, a - b);                                                               )
 
 //-----------------------------------------------------------------------------------------------------
 
@@ -181,6 +184,7 @@ CMD_DEF(CALL,                                                                   
         printf("new pc = %ld\n", val);                                                              \
         StackPush(&pCPU->retstk, pCPU->RPC + sizeof(label_t));                                      \
         pCPU->RPC = val - 1;                                                                        \
+        printf("# retstk\n");                                                                       \
         StackDump(&pCPU->retstk);                                                                   )
 
 
@@ -189,6 +193,7 @@ CMD_DEF(CALL,                                                                   
 CMD_DEF(RET,                                                                                        \
         printf("RET\n");                                                                            \
         label_t label = 0;                                                                          \
+        printf("# retstk\n");                                                                       \
         StackPop(&pCPU->retstk, &label);                                                               \
         printf("new pc = %ld\n", label);                                                            \
         pCPU->RPC = label;                                                                          \
