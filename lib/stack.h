@@ -7,9 +7,15 @@
 
 //-----------------------------------------------------------------------------------------------------
 
+#include <stdio.h>
+#include <stdlib.h>
+
+//-----------------------------------------------------------------------------------------------------
+
 #define POISON 0xBEDA
 #define STK_POISON 0XDEADBEEF
 #define STK_CANARY_PROT true
+#define DEBUG true
 
 //-----------------------------------------------------------------------------------------------------
 
@@ -34,7 +40,8 @@ int StackPush( Stack * pStack, elem_t val );
 int StackPop( Stack * pStack, elem_t * retData );
 int StackIsEmpty ( Stack * pStack );
 int StackTop( Stack * pStack, elem_t * retData );
-
+void UnitTests( Stack * pStack );
+int StackDump( Stack * pStack );
 //-----------------------------------------------------------------------------------------------------
 
 #endif //STACK_STACK_H
