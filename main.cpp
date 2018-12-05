@@ -9,7 +9,7 @@
 
 //-----------------------------------------------------------------------------------------------------
 /**
- * TODO call, ret
+ * TODO put this func in single header
  */
 //-----------------------------------------------------------------------------------------------------
 
@@ -41,10 +41,11 @@ enum REG_NUM
 enum CONSTS
 {
     FOPEN_ERR =  -1,
-    RAM_SIZE = 3,
+    RAM_SIZE = 10,
     STK_START_SIZE = 10
 };
 
+#define DEBUG true
 
 //-----------------------------------------------------------------------------------------------------
 
@@ -79,8 +80,6 @@ int main()
 
     cpu_t theCPU;
     cpu_exec( &theCPU, arr );
-
-    theCPU.code = arr;
 
     cpu_load( &theCPU );
 
@@ -151,12 +150,12 @@ int cpu_load(cpu_t *pCPU)
                 elem_t b = 0;                                           \
                 StackPop(&pCPU->stk, &a);                               \
                 StackPop(&pCPU->stk, &b);                               \
-                printf(# name ": data: a = %lg, b = %lg\n", a, b);      \
+                printf(# name ": data: a = %ld, b = %ld\n", a, b);      \
                 if (a op b)                                             \
                 {                                                       \
                     char * num = &pCPU->code[pCPU->RPC + 1];            \
                     char * end;                                         \
-                    label_t val = strtol(num, &end, 10);                   \
+                    label_t val = strtol(num, &end, 10);                \
                     printf("new pc = %ld\n", val);                      \
                     pCPU->RPC = val - 1;                                \
                 }                                                       \
@@ -179,6 +178,9 @@ int cpu_load(cpu_t *pCPU)
 
 int cpu_dump(cpu_t *pCPU)
 {
+    if (!DEBUG)
+        return 1;
+
     printf( "\n# CPU [%p] (OK)\n", pCPU );
     printf("# REG count = %d\n", REG_MAX);
     printf("# RPC = %ld\n", pCPU->RPC);
@@ -195,4 +197,6 @@ int cpu_dump(cpu_t *pCPU)
 
     printf( "#      }\n"
                     "# }\n\n" );
+
+    return 0;
 }

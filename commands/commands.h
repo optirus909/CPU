@@ -1,3 +1,8 @@
+/**
+ * TODO pop to memory with register, like POPMR RAX+0, PUSHRM RDX+3
+ */
+//-----------------------------------------------------------------------------------------------------
+
 CMD_DEF(NOPE,                                                                                       )
 
 //-----------------------------------------------------------------------------------------------------
@@ -40,6 +45,21 @@ CMD_DEF(PUSHM,                                                                  
 
 //-----------------------------------------------------------------------------------------------------
 
+CMD_DEF(PUSHMR,                                                                                     \
+        printf("PUSHMR\n");                                                                         \
+        pCPU->RPC++;                                                                                \
+        int registr = pCPU->code[ pCPU->RPC ];                                                      \
+        printf("registr = %ld\n", registr);                                                         \
+        char * num = &pCPU->code[pCPU->RPC + 1];                                                    \
+        char * end;                                                                                 \
+        label_t val = strtol(num, &end, 10);                                                        \
+        printf("plus val = %ld\n", val);                                                            \
+        StackPush(&pCPU->stk, pCPU->RAM[pCPU->reg[registr] + val]);                                 \
+        cpu_dump(pCPU);                                                                             \
+        StackDump(&pCPU->stk);                                                                      )
+
+//-----------------------------------------------------------------------------------------------------
+
 CMD_DEF(POPR,                                                                                       \
         printf("POPR\n");                                                                           \
         pCPU->RPC++;                                                                                \
@@ -69,6 +89,21 @@ CMD_DEF(POPM,                                                                   
         StackPop(&pCPU->stk, &pCPU->RAM[index]);                                                    \
         pCPU->RPC += sizeof(elem_t) - 1;                                                            \
         cpu_dump(pCPU);                                                                             )
+
+//-----------------------------------------------------------------------------------------------------
+
+CMD_DEF(POPMR,                                                                                     \
+        printf("POPMR\n");                                                                         \
+        pCPU->RPC++;                                                                                \
+        int registr = pCPU->code[ pCPU->RPC ];                                                      \
+        printf("registr = %ld\n", registr);                                                         \
+        char * num = &pCPU->code[pCPU->RPC + 1];                                                    \
+        char * end;                                                                                 \
+        label_t val = strtol(num, &end, 10);                                                        \
+        printf("plus val = %ld\n", val);                                                            \
+        StackPop(&pCPU->stk, &pCPU->RAM[pCPU->reg[registr] + val]);                                 \
+        cpu_dump(pCPU);                                                                             \
+        StackDump(&pCPU->stk);                                                                      )
 
 //-----------------------------------------------------------------------------------------------------
 
@@ -134,7 +169,7 @@ CMD_DEF(JMP,                                                                    
         printf("JMP\n");                                                                            \
         char * num = &pCPU->code[pCPU->RPC + 1];                                                    \
         char * end;                                                                                 \
-        label_t val = strtol(num, &end, 10);                                                           \
+        label_t val = strtol(num, &end, 10);                                                        \
         printf("new pc = %ld\n", val);                                                              \
         pCPU->RPC = val - 1;                                                                        )
 
@@ -194,7 +229,7 @@ CMD_DEF(RET,                                                                    
         printf("RET\n");                                                                            \
         label_t label = 0;                                                                          \
         printf("# retstk\n");                                                                       \
-        StackPop(&pCPU->retstk, &label);                                                               \
+        StackPop(&pCPU->retstk, &label);                                                            \
         printf("new pc = %ld\n", label);                                                            \
         pCPU->RPC = label;                                                                          \
         StackDump(&pCPU->retstk);                                                                   )

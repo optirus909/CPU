@@ -45,6 +45,9 @@ void UnitTests( Stack * pStack )
 
 int StackDump( Stack * pStack )
 {
+    if (!DEBUG)
+        return 1;
+
     if ( StackOk(pStack) < 0 )
     {
 
@@ -81,4 +84,6 @@ int StackDump( Stack * pStack )
         printf( "#      }\n"
                         "# }\n\n" );
     }
+
+    return 0;
 }

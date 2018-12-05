@@ -25,6 +25,8 @@ struct Stack
 
 #endif// STACK_STACK_H
 
+#define DEBUG true
+
 void UnitTests( Stack * pStack );
 int StackDump( Stack * pStack );
 
