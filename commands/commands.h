@@ -88,8 +88,8 @@ CMD_DEF(POPM,                                                                   
 
 //-----------------------------------------------------------------------------------------------------
 
-CMD_DEF(POPMR,                                                                                     \
-        printf("POPMR\n");                                                                         \
+CMD_DEF(POPMR,                                                                                      \
+        printf("POPMR\n");                                                                          \
         pCPU->RPC++;                                                                                \
         int registr = pCPU->code[ pCPU->RPC ];                                                      \
         printf("registr = %ld\n", registr);                                                         \

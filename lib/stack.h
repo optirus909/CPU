@@ -42,6 +42,7 @@ int StackIsEmpty ( Stack * pStack );
 int StackTop( Stack * pStack, elem_t * retData );
 void UnitTests( Stack * pStack );
 int StackDump( Stack * pStack );
+
 //-----------------------------------------------------------------------------------------------------
 
 #endif //STACK_STACK_H

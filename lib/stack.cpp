@@ -11,9 +11,9 @@
     {                                                                                               \
     int result = (what);                                                                            \
     if (result op (ref))                                                                            \
-        printf("# [passed] " # what "\n\n");                                                                 \
+        printf("# [passed] " # what "\n\n");                                                        \
     else                                                                                            \
-        printf("# " # what " is %d, but true is " #op " %d, line %d\n\n", result, (ref), __LINE__);                      \
+        printf("# " # what " is %d, but true is " #op " %d, line %d\n\n", result, (ref), __LINE__); \
     }
 
 //-----------------------------------------------------------------------------------------------------
@@ -127,7 +127,6 @@ int StackPop( Stack * pStack, elem_t * retData )
     }
     else
         return 1;  // stack is empty
-    /// -1
 }
 
 //-----------------------------------------------------------------------------------------------------
